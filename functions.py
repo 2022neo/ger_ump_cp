@@ -137,8 +137,9 @@ def prepare_dataset(path, n_path, max_seq_len=128):
 
   with open(n_path, encoding='utf-8') as f:
     neigh = json.load(f)
-  add_neighbor_noise = config.add_neighbor_noise
-  onlyname = config.onlyname
+     
+  add_neighbor_noise = True
+  onlyname = False
   for b in range(len(neigh)):
     neigh[b]['name1'] = custom_tokenize(tokenizer(neigh[b]['name1'])['input_ids'],tokenizer.vocab_size,config.add_noise)
     neigh[b]['name2'] = custom_tokenize(tokenizer(neigh[b]['name2'])['input_ids'],tokenizer.vocab_size,config.add_noise)

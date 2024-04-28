@@ -3,7 +3,6 @@ import hashlib
 SEED = 123
 DEVICE = 'cuda:7'
 LANGUAGE_MODEL_NAME='bert-base-uncased'
-# sampled_prefix = 'sampled-osm_fsq-osm_yelp-NR_2000-DSPC_5000'
 sampled_prefix = 'sampled-osm_fsq-osm_yelp-NR_2000-DSPC_5000-UVP_True'
 
 def get_sampling_config():
@@ -53,52 +52,52 @@ loader_config=get_loader_config()
 print(loader_config,'\n')
 
 
-def get_pretrain_config():
-    pretrain_config = edict(
-        pretrain_epochs = 300,
-        batch_size = 3,
-        opt_batch_count = 10,
-        node_feat_dim = 768,
-        hidd_stat_dim = 128,
-        edge_attr_dim = 1,
-        early_stop_patience = 3,
-        dropout_p = 0.4,
-        add_self_loops = True,
-        aggr = 'add',
-        use_act= True,
-        ignore_tokens = [0, 102], #[CLS]=101 [MASK]=103 [SEP]=102 [PAD]=0
-        train_ratio = 0.8,
-        penalty_ctrst = 0.1,
-        penalty_match = 0.01,
-        penalty_mlm = 0.4,
-        ctrst_tau = 0.1,      #temperature of contrastive learning
-        use_weighted_pos = True,  # only calculate loss on ego node
-        global_pool_name = 'add',  #add
-        pad_attn_scale = -10, # to ignore padding token
-        lr = 0.00001,
-    )
-    pretrain_config_tag = '-'.join([f'{k}_{"_".join([str(vi) for vi in v])}' if isinstance(v,list) else f'{k}_{v}' for k,v in pretrain_config.items()])
-    pretrain_dir = './pretrain_ckpt'
-    pretrain_config_tag=pretrain_config_tag.replace(".","d").replace(":","")
-    hash_object =hashlib.md5(pretrain_config_tag.encode()).hexdigest()
-    pretrain_ckpt_path = f'{pretrain_dir}/{sampled_prefix}/{hash_object}/best_epoch.pt'
-    pretrain_config.pretrain_ckpt_path=pretrain_ckpt_path
-    return pretrain_config
-pretrain_config = get_pretrain_config()
-print(pretrain_config,'\n')
+# def get_pretrain_config():
+#     pretrain_config = edict(
+#         pretrain_epochs = 300,
+#         batch_size = 3,
+#         opt_batch_count = 10,
+#         node_feat_dim = 768,
+#         hidd_stat_dim = 128,
+#         edge_attr_dim = 1,
+#         early_stop_patience = 3,
+#         dropout_p = 0.4,
+#         add_self_loops = True,
+#         aggr = 'add',
+#         use_act= True,
+#         ignore_tokens = [0, 102], #[CLS]=101 [MASK]=103 [SEP]=102 [PAD]=0
+#         train_ratio = 0.8,
+#         penalty_ctrst = 0.1,
+#         penalty_match = 0.01,
+#         penalty_mlm = 0.4,
+#         ctrst_tau = 0.1,      #temperature of contrastive learning
+#         use_weighted_pos = True,  # only calculate loss on ego node
+#         global_pool_name = 'add',  #add
+#         pad_attn_scale = -10, # to ignore padding token
+#         lr = 0.00001,
+#     )
+#     pretrain_config_tag = '-'.join([f'{k}_{"_".join([str(vi) for vi in v])}' if isinstance(v,list) else f'{k}_{v}' for k,v in pretrain_config.items()])
+#     pretrain_dir = './pretrain_ckpt'
+#     pretrain_config_tag=pretrain_config_tag.replace(".","d").replace(":","")
+#     hash_object =hashlib.md5(pretrain_config_tag.encode()).hexdigest()
+#     pretrain_ckpt_path = f'{pretrain_dir}/{sampled_prefix}/{hash_object}/best_epoch.pt'
+#     pretrain_config.pretrain_ckpt_path=pretrain_ckpt_path
+#     return pretrain_config
+# pretrain_config = get_pretrain_config()
+# print(pretrain_config,'\n')
 
 
-def get_finetune_config():
-    finetune_config = edict(
-        epochs = 10,
-        batch_size=5,
-        model='yes.pt',
-    )
-    finetune_config_tag = '-'.join([f'{k}_{v}' for k,v in finetune_config.items()])
-    finetune_dir = './finetune_ckpt'
-    pretrain_ckpt_path = f'{finetune_dir}/{sampled_prefix}/{finetune_config_tag.replace(".","d")}'
-    loader_config.pretrain_ckpt_path=pretrain_ckpt_path
-    return finetune_config
+# def get_finetune_config():
+#     finetune_config = edict(
+#         epochs = 10,
+#         batch_size=5,
+#         model='yes.pt',
+#     )
+#     finetune_config_tag = '-'.join([f'{k}_{v}' for k,v in finetune_config.items()])
+#     finetune_dir = './finetune_ckpt'
+#     pretrain_ckpt_path = f'{finetune_dir}/{sampled_prefix}/{finetune_config_tag.replace(".","d")}'
+#     loader_config.pretrain_ckpt_path=pretrain_ckpt_path
+#     return finetune_config
 
 
 def is_valid_pos(city,lat,lon):

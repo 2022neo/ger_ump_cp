@@ -219,7 +219,7 @@ def main(param):
                         continue
                     
                     neighbor_attr = dict_to_sentence(row)
-                    if  dist < NEIGHBORHOOD_RADIUS:
+                    if  dist < NEIGHBORHOOD_RADIUS and len(entry['neigh1'])<50:
                         if (name1 == row['name'].lower() and str(row['latitude']) == lat1 and str(row['longitude']) == long1) or (name2 == row['name'].lower() and str(row['latitude']) == lat2 and str(row['longitude']) == long2):
                             continue
                         entry['neigh1'].append(row['name'].lower())
@@ -235,7 +235,7 @@ def main(param):
                     except ValueError:
                         continue
                     
-                    if dist < NEIGHBORHOOD_RADIUS:
+                    if dist < NEIGHBORHOOD_RADIUS and len(entry['neigh2'])<50:
                         if (name1 == row['name'].lower() and str(row['latitude']) == lat1 and str(row['longitude']) == long1) or (name2 == row['name'].lower() and str(row['latitude']) == lat2 and str(row['longitude']) == long2):
                             continue
                         entry['neigh2'].append(row['name'].lower())

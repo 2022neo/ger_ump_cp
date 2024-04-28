@@ -1,7 +1,7 @@
 from config_pretrain import loader_config
 import pandas as pd
 import numpy as np
-from transformers import BertTokenizer,BertModel
+from transformers import BertTokenizer
 from difflib import SequenceMatcher
 import json
 from tqdm import tqdm
@@ -13,7 +13,7 @@ from copy import deepcopy
 import argparse
 import sys
 sys.path.append('../')
-from model import UmpLayer,GeoUmpForPretrain
+from model import GeoUmpForPretrain
 import config
 
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -163,8 +163,8 @@ model,pretrain_log,save_model_path = get_model(device)
 citys = ['pit','edi','sin','tor']
 if pretrain_log:
     start_epoch = pretrain_log['epoch']+1
-    # epoch_lr = pretrain_log['epoch_lr']
-    # weight_decay  = pretrain_log['weight_decay']
+    epoch_lr = pretrain_log['epoch_lr']
+    weight_decay  = pretrain_log['weight_decay']
     epoch_lr = 1e-5
     weight_decay = 0.0
     best_train_loss = pretrain_log['best_train_loss']

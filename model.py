@@ -114,48 +114,6 @@ class UmpLayer(nn.Module):
     updated_xs = torch.stack(updated_xs)
     return updated_xs
   
-  def inject_neighbor(self,x_n,b_s,xs,neighbert):
-    raise
-    pass
-    # pooled_xs = []
-    # for b in range(b_s):
-    #   x_message_neighborhood = []
-    #   for token_n in x_n[b]['neigh1_attr']:
-    #     emb_n = neighbert(torch.tensor(token_n).to(self.device).unsqueeze(0))[0]
-    #     message = F.scaled_dot_product_attention(query=self.query_lin(xs[b].unsqueeze(0)), key=self.key_lin(emb_n), value=emb_n)
-    #     x_message_neighborhood.append(message)
-    #   for token_n in x_n[b]['neigh2_attr']:
-    #     emb_n = neighbert(torch.tensor(token_n).to(self.device).unsqueeze(0))[0]
-    #     message = F.scaled_dot_product_attention(query=self.query_lin(xs[b].unsqueeze(0)), key=self.key_lin(emb_n), value=emb_n)
-    #     x_message_neighborhood.append(message)
-    #   x_distances =  x_n[b]['dist1']+ x_n[b]['dist2']
-    #   if not len(x_distances):
-    #     x_distances.append(1000)
-    #   x_distances = torch.tensor(x_distances, dtype=torch.float).view(-1, 1).to(self.device)
-
-    #   if len(x_message_neighborhood):
-    #     x_message_neighborhood = torch.cat(x_message_neighborhood,dim=0).to(self.device)
-    #   else:
-    #     x_message_neighborhood = torch.zeros((1,1,768)).to(self.device)
-
-    #   pooled_message_neighborhood = x_message_neighborhood.mean(dim=1)
-    #   x_concat = torch.cat([self.w_attn_attr(xs[b].mean(dim=0)).view(1,-1).repeat(pooled_message_neighborhood.shape[0], 1), self.w_attn_attr(pooled_message_neighborhood)], 1)
-    #   x_att = self.leaky(self.attn_attr(x_concat)) + self.b_attn_attr(x_distances)
-      
-    #   if self.attn_type=='softmax':
-    #     x_att = F.softmax(x_att,0)
-    #   elif self.attn_type=='sigmoid':
-    #     x_att = x_att.sigmoid()
-    #   elif self.attn_type=='sigmoid_relu':
-    #     x_att = ((x_att.sigmoid() - 0.5)*2).relu()
-    #   else:
-    #     raise
-    #   x=(xs[b] + torch.sum(x_att.unsqueeze(-1)*x_message_neighborhood,0)).unsqueeze(0)
-    #   pooled_x = F.scaled_dot_product_attention(query=self.query_lin(x), key=self.key_lin(x), value=self.value_lin(x))[:, 0, :]
-    #   pooled_xs.append(pooled_x.squeeze())
-    # pooled_xs = torch.stack(pooled_xs)
-    # return pooled_xs
-  
 class GeoUmpER(nn.Module):
   def __init__(self, device, c_emb, n_emb, a_emb, dropout, finetuning=True):
       super().__init__()
@@ -270,30 +228,27 @@ class GeoUmpER(nn.Module):
       with torch.no_grad():
         output = self.language_model(x, attention_mask=att_mask)[0]
 
-    if config.use_neighbor:
+    if config.use_geoer:
       x_neighbors = self.encode_neighbor(x_n,b_s)
     else:
       x_neighbors = torch.zeros(b_s,config.n_em).to(self.device)
 
     if config.use_ump:
-      if config.inject_sep:
-        e12pos_list = []
-        for subx in x:
-            all_sep = torch.where(subx==102)[0].tolist()
-            if len(all_sep)==2:
-              sep1,sep2 = all_sep
-            else:
-              sep2 = all_sep[-1]
-              for ind in all_sep[:-1]:
-                if subx[ind+1].item()==8902:
-                  sep1 = ind
-                  break
-            e12pos_list.append(
-              ([1,sep1-1],[sep1+1,sep2-1])
-            )
-        pooled_output = self.ump_layer.inject_neighbor_sep(x_n,b_s,output,self.neighbert,e12pos_list)[:, 0, :]
-      else:
-        pooled_output = self.ump_layer.inject_neighbor(x_n,b_s,output,self.neighbert)
+      e12pos_list = []
+      for subx in x:
+          all_sep = torch.where(subx==102)[0].tolist()
+          if len(all_sep)==2:
+            sep1,sep2 = all_sep
+          else:
+            sep2 = all_sep[-1]
+            for ind in all_sep[:-1]:
+              if subx[ind+1].item()==8902:
+                sep1 = ind
+                break
+          e12pos_list.append(
+            ([1,sep1-1],[sep1+1,sep2-1])
+          )
+      pooled_output = self.ump_layer.inject_neighbor_sep(x_n,b_s,output,self.neighbert,e12pos_list)[:, 0, :]
     else:
       pooled_output = output[:, 0, :] # take only 0 (the position of the [CLS])
   
