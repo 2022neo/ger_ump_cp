@@ -9,4 +9,4 @@ for city in sin pit edi tor; do
     done
 done
 #
-# sh run_ours.sh 7 0.2 && sh run_ours.sh 7 0.4
+# sh run_ours.sh 5 0.2 && sh run_ours.sh 6 0.4

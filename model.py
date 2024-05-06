@@ -32,7 +32,7 @@ class GeoUmpForPretrain(nn.Module):
       masked_lm_loss = self.loss_fct_mlm(prediction_scores.view(-1, self.tokenizer.vocab_size), token_labels.view(-1))
       logits = F.log_softmax(self.linear2(self.drop(self.gelu(self.linear1(output[:, 0, :])))), dim=1)
       pair_cls_loss = self.loss_fct_cls(logits, pair_labels)
-      return masked_lm_loss + pair_cls_loss
+      return masked_lm_loss, pair_cls_loss
 
 class UmpLayer(nn.Module):
   def __init__(self, a_emb,n_emb,hidden_size,device,attn_type):

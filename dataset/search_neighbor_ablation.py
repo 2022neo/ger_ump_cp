@@ -118,7 +118,7 @@ HIDDEN_SIZE = 768
 
 def main(param):
     city,split = param
-    csv_root = '/home/jiyuwen/project/ger_refiner/pretrain_data'
+    csv_root = '../pretrain_data'
     dataset_table_path = csv_root + split + city+ '.csv'
     dataset = pd.read_csv(dataset_table_path,index_col=0).fillna(' ')
 

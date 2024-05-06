@@ -24,8 +24,10 @@ mask_id = tokenizer.convert_tokens_to_ids(['[MASK]'])[0]
 col_id,val_id = tokenizer.convert_tokens_to_ids(tokenizer.tokenize('COL VAL'))
 
 parser = argparse.ArgumentParser(description='Pretrain')
-parser.add_argument('--attn_type', type=str, default='sigmoid',help='sigmoid_relu sigmoid softmax ')
+parser.add_argument('--attn_type', type=str, default='softmax',help='sigmoid_relu sigmoid softmax ')
 parser.add_argument('-d','--device', type=int, default=7)
+parser.add_argument('--aep', type=int, default=1)
+parser.add_argument('--mlm', type=int, default=1)
 args = parser.parse_args()
 config.attn_type = args.attn_type
 config.device = f'cuda:{args.device}'
@@ -148,7 +150,14 @@ def get_dataset(city='pit'):
 def get_model(device):
     model = GeoUmpForPretrain(device=device, n_emb=config.n_em, a_emb=config.a_em, dropout=config.dropout)
     model = model.to(device)
-    save_model_path = f'./save_models/attntype_{model.ump_layer.attn_type}-epoch_latest.pth'
+    if args.aep and args.mlm:
+        save_model_path = f'./save_models/attntype_{model.ump_layer.attn_type}-epoch_latest.pth'
+    elif args.aep and not args.mlm:
+        save_model_path = f'./save_models_aep/attntype_{model.ump_layer.attn_type}-epoch_latest.pth'
+    elif args.mlm and not args.aep:
+        save_model_path = f'./save_models_mlm/attntype_{model.ump_layer.attn_type}-epoch_latest.pth'
+    else:
+        raise
     print(save_model_path)
     pretrain_log=None
     if Path(save_model_path).exists():
@@ -218,7 +227,15 @@ for epoch in range(start_epoch,100):
             att_mask = torch.tensor(np.where(x != 0, 1, 0)).to(device)
             x = x.to(device)
             bs = batch_size if i%batch_size==0 else i%batch_size
-            loss = model(x, x_n, att_mask, bs, e12pos_list,token_labels,pair_labels)
+            masked_lm_loss,pair_cls_loss = model(x, x_n, att_mask, bs, e12pos_list,token_labels,pair_labels)
+            if args.aep and args.mlm:
+                loss = masked_lm_loss+pair_cls_loss
+            elif args.aep and not args.mlm:
+                loss = pair_cls_loss
+            elif args.mlm and not args.aep:
+                loss = masked_lm_loss
+            else:
+                raise
             loss.backward()
             if i%32 == 0:
                 optimizer.step()

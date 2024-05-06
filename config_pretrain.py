@@ -40,12 +40,8 @@ def get_loader_config():
     loader_citys = ['pit','edi','sin','tor']
     loader_config_tag = '-'.join(loader_citys+[f'{k}_{v}' for k,v in loader_config.items()])
     loader_config_tag =hashlib.md5(loader_config_tag.encode()).hexdigest()
-    loader_dir = '/mnt/16t_3/jiyuwen/pretrain_loader'
-    loader_root = f'{loader_dir}/{sampled_prefix}/{loader_config_tag}'
-    loader_config.loader_root=loader_root
     loader_config.loader_citys=loader_citys
     loader_config.sampled_prefix=sampled_prefix
-    loader_config.loader_dir=loader_dir
     loader_config.SAMPLE_ROOT=sampling_config.SAMPLE_ROOT
     return loader_config
 loader_config=get_loader_config()
