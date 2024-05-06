@@ -1,4 +1,4 @@
-# code for 'Unaligned Message-Passing and Contextualized-Pretraining for Robust Geo-Entity Resolution'
+# Code for 'Unaligned Message-Passing and Contextualized-Pretraining for Robust Geo-Entity Resolution'
 A framework for enhancing the robustness of current geo-entity resolution methods based on pre-trained language models. Geo-entity resolution involves linking records that refer to the same entities across different spatial datasets.
 
 ### Contextualized Pretraining (CP)
