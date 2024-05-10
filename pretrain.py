@@ -26,6 +26,7 @@ col_id,val_id = tokenizer.convert_tokens_to_ids(tokenizer.tokenize('COL VAL'))
 parser = argparse.ArgumentParser(description='Pretrain')
 parser.add_argument('--attn_type', type=str, default='softmax',help='sigmoid_relu sigmoid softmax ')
 parser.add_argument('-d','--device', type=int, default=7)
+parser.add_argument('--max_epochs', type=int, default=20)
 parser.add_argument('--aep', type=int, default=1)
 parser.add_argument('--mlm', type=int, default=1)
 args = parser.parse_args()
@@ -185,7 +186,7 @@ else:
 
 optimizer = optim.Adam(model.parameters(), lr=epoch_lr, weight_decay=weight_decay)
 model.train()
-for epoch in range(start_epoch,100):
+for epoch in range(start_epoch,args.max_epochs):
     train_loss=0
     city = citys[epoch%4]
     data1,data2,labels=get_dataset(city)
