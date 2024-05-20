@@ -186,7 +186,7 @@ else:
 
 optimizer = optim.Adam(model.parameters(), lr=epoch_lr, weight_decay=weight_decay)
 model.train()
-for epoch in range(start_epoch,args.max_epochs):
+for epoch in range(start_epoch,args.max_epochs+1):
     train_loss=0
     city = citys[epoch%4]
     data1,data2,labels=get_dataset(city)
