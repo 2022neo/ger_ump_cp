@@ -8,6 +8,10 @@
 A framework for enhancing the robustness of current geo-entity resolution methods based on pre-trained language models, accepted by [AAAI'25](https://ojs.aaai.org/index.php/AAAI/article/view/33290). 
 Geo-entity resolution involves linking records that refer to the same entities across different spatial datasets.
 
+> 📝 **Paper**: https://ojs.aaai.org/index.php/AAAI/article/view/33290<br/>
+> ✒️ **Authors**: Yuwen Ji, Wenbo Xie, Jiaqi Zhang, Chao Wang, Ning Guo, Lei Shi, Yue Zhang
+
+
 ### Contextualized Pretraining (CP)
 To generate pretraining datasets, run:
 ```
@@ -40,3 +44,18 @@ cd ..
 sh run_ablation.sh 0 0.2
 ```
 Running ``sh run_ablation.sh 0 0.2`` means executing the ablation experiments with a perturbation rate of ``0.2`` using ``CUDA:0``.
+
+
+
+## Citation
+```bibtex
+@inproceedings{ji2025unaligned,
+  title={Unaligned Message-Passing and Contextualized-Pretraining for Robust Geo-Entity Resolution},
+  author={Ji, Yuwen and Xie, Wenbo and Zhang, Jiaqi and Wang, Chao and Guo, Ning and Shi, Lei and Zhang, Yue},
+  booktitle={Proceedings of the AAAI Conference on Artificial Intelligence},
+  volume={39},
+  number={11},
+  pages={11852--11860},
+  year={2025}
+}
+```
